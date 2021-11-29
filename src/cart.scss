@@ -1,0 +1,60 @@
+@import './common.scss';
+
+.Root {
+  color: aliceblue;
+}
+
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+.cart-box {
+  margin-right: 30px;
+  flex-grow: 1;
+  .item-tab {
+
+  }
+  .buy-tab{
+    
+  }
+  .more-tab{
+
+  }
+}
+
+.item-tab {
+
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    height: 120px;
+    padding: 10px 0;
+  }
+  .item-title {
+    display: flex;
+    align-items: center;
+  }
+  .item-title img {
+    height: 100%;
+    padding-right: 20px;
+  }
+  .item-price {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  
+  }
+  }
+
+  .buy-tab{
+
+    .total {
+      display: flex;
+    }
+    .total-price {
+      flex-grow: 1;
+    }
+    .total-buynow {
+
+    }
+  }
