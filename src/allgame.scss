@@ -1,0 +1,147 @@
+@import './common.scss';
+
+/* VISUAL */
+
+.visual {
+  margin-bottom: 20px;
+}
+.visual .inner {
+
+}
+.visual .inner .main {
+  position: relative;
+  padding: 40px 80px 80px;
+}
+.visual .inner .main img {
+  width: 100%;
+}
+.visual .inner .main .main-text {
+  position: absolute;
+  height: 10vw;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.visual .inner .main .main-text p {
+  text-align: center;
+  font-size: 35px;
+  color: azure;
+  text-decoration: solid black;
+}
+
+.slide {
+
+}
+.slide .inner {
+  position: relative;
+}
+.slide .inner .title {
+  color: azure;
+  font-size: 30px;
+}
+.slide .inner .slide-box {
+  display: flex;
+  justify-content: space-evenly;
+}
+.wow-enter {
+  opacity: 0;
+}
+.wow-enter-active {
+  opacity: 1;
+  transition: all 1.5s;
+}
+.slide .inner .slide-box .card .info {
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+}
+.slide .inner .slide-box .card .sale {
+  background-color: #4c6b22;
+  font-size: 18px;
+  width: 60px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slide .inner .slide-box .card .price {
+  width: 100px;
+  height: 40px;
+  padding-left: 15px;
+  background-color: #0d2f3f;
+}
+.slide .inner .slide-box .card .price .origin {
+  text-align: center;
+  color: #7193a6;
+  font-size: 12px;
+  text-decoration-line: line-through;
+}
+.slide .inner .slide-box .card .price .final {
+  font-size: 15px;
+  color: #acdbf5;
+}
+.slide .inner .prev{
+
+}
+.slide .inner .next {
+
+}
+
+
+
+
+
+.Root.item-box {
+
+}
+.Root .item-box .inner {
+
+}
+.Root .item-box .inner .item-tab {
+
+}
+.Root .item-box .inner .item-container {
+
+}
+.Root .item-box .inner .item-container .item-content {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 100px;
+}
+.Root .item-box .inner .item-container .item-content .content-img {
+  position: absolute;
+  left: 0;
+  height: 100px;
+  width: 200px;
+}
+.Root .item-box .inner .item-container .item-content .content-img img {
+  height: 100%;
+  width: 100%;
+}
+.Root .item-box .inner .item-container .item-content .content-info {
+  position: absolute;
+  width: 300px;
+  right: 20px;
+  color: beige;
+}
+.Root .item-box .inner .item-container .item-content .content-info p {
+  margin: 5px;
+}
+.slide-dot-box {
+  border: 10px solid #b8b6b4;
+  display: flex;
+  justify-content: center;
+}
+.now-dot {
+  color: #c6d4df;
+  font-size: 25px;
+}
+.slide-dot {
+  transition: 0.8s;
+  color: #767e88;
+  font-size: 25px;
+}
