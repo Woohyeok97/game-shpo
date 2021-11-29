@@ -44,10 +44,11 @@ function Detail(props) {
 
   useEffect(()=>{
     props.topScroll()
+  },[])
+
   return(
     <div className="Root">
-
-
+      
       <section className="item">
         <div className="inner">
           <p className="title">{ items.title }</p>
@@ -110,4 +111,4 @@ function ItemInfo(props) {
 }
 
 
-export default Detail;
+export default Detail
