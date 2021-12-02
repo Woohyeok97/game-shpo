@@ -21,7 +21,7 @@ function AllGame(props) {
   let [슬라이드아이템, 슬라이드아이템변경] = useState([sale30, sale40, sale50])
   let [카운트, 카운트변경] = useState(0)
   let 스위치 = useSelector((state)=> state.스위치)
-  let [버튼, 버튼변경] = useState(false)
+  let [버튼, 버튼변경] = useState(false) 
 
   function 장르별찾기(장르) {
     let 찾음 = item.filter((item)=>{ return item.genre === 장르 })
@@ -30,12 +30,19 @@ function AllGame(props) {
     전체상품변경(copy)
   }
 
-  function slideSystem() {
-    if(카운트 > 2 ) { 카운트변경(0) }
-    if(카운트 < 0 ) { 카운트변경(2) }
+
+  function 플러스시스템() {
+    if(카운트 < 2) { 카운트변경(카운트 + 1); }
+    else { 카운트변경(0) }
+  }
+  function 마이너스시스템() {
+    if(카운트 > 0) { 카운트변경(카운트 - 1) }
+    else { 카운트변경(2) }
   }
 
-  
+  useEffect(()=>{
+    
+  },[카운트])
 
   useEffect(()=>{
     dispatch({ type: '스위치true' })
@@ -43,6 +50,8 @@ function AllGame(props) {
       dispatch({ type: '모달off' })
     }
   },[])
+
+  
 
   return(
   <div className="Root">
@@ -66,18 +75,17 @@ function AllGame(props) {
               <SlideContent 슬라이드아이템={슬라이드아이템} 카운트={카운트} 버튼변경={버튼변경} />
           </div>
         </CSSTransition>
-        <button className='prev' onClick={()=>{ 카운트변경(카운트 - 1); 버튼변경(false) }}>왼쪽!</button>
-        <button className='next' onClick={()=>{ 카운트변경(카운트 + 1); 버튼변경(false) }}>오른쪽!</button>
+        <button className='prev' onClick={()=>{ 마이너스시스템(); 버튼변경(false) }}>왼쪽!</button>
+        <button className='next' onClick={()=>{ 플러스시스템(); 버튼변경(false) }}>오른쪽!</button>
         <div className="slide-dot-box">
           { 슬라이드아이템.map((a, i)=>{
             if(i !== 카운트) {return<span className="slide-dot" 
-            onClick={()=>{ 버튼변경(false);  카운트변경(i)}}>ㅡ</span>}
+            onClick={()=>{ 버튼변경(false);  카운트변경(i)} }>ㅡ</span>}
             if(i === 카운트) {return<span className="now-dot"
-            onClick={()=>{ 버튼변경(false);  카운트변경(i)}}>ㅡ</span>}
+            onClick={()=>{ 버튼변경(false);  카운트변경(i) }}>ㅡ</span>}
           })}
         </div>
- 
-        { slideSystem() }
+        
         
       </div>
     </section>

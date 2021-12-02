@@ -132,7 +132,7 @@ function App() {
       <section className="visual">
         <div className="inner">
           <h2 className="title">
-            <span>RECOMMEND 맥북한번쓰기 ㅈㄴ 힘드네</span>
+            <span>RECOMMEND</span>
           </h2>
           <div className="slide-container">
             <div className="slide-content-box">             
