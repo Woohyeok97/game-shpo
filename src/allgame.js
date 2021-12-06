@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Nav, Card, Button, Carousel } from 'react-bootstrap'
@@ -21,28 +21,10 @@ function AllGame(props) {
   let [슬라이드아이템, 슬라이드아이템변경] = useState([sale30, sale40, sale50])
   let [카운트, 카운트변경] = useState(0)
   let 스위치 = useSelector((state)=> state.스위치)
-  let [버튼, 버튼변경] = useState(false) 
-
-  function 장르별찾기(장르) {
-    let 찾음 = item.filter((item)=>{ return item.genre === 장르 })
-    let copy = [...item]
-    copy = 찾음
-    전체상품변경(copy)
-  }
-
-
-  function 플러스시스템() {
-    if(카운트 < 2) { 카운트변경(카운트 + 1); }
-    else { 카운트변경(0) }
-  }
-  function 마이너스시스템() {
-    if(카운트 > 0) { 카운트변경(카운트 - 1) }
-    else { 카운트변경(2) }
-  }
-
-  useEffect(()=>{
-    
-  },[카운트])
+  let [버튼, 버튼변경] = useState(false)
+  let 타이머 = useRef()
+  let autoPlay = useRef()
+  autoPlay.current = 플러스시스템
 
   useEffect(()=>{
     dispatch({ type: '스위치true' })
@@ -51,6 +33,45 @@ function AllGame(props) {
     }
   },[])
 
+  useEffect(()=>{
+    자동카운트()
+    return ()=> clearInterval(타이머.current) 
+  },[])
+
+  useEffect(()=>{
+    console.log(버튼)
+  },[카운트])
+  //자동카운트 동안에 버튼이 false로 안바뀌넹?/
+
+  function 장르별찾기(장르) {
+    let 찾음 = item.filter((item)=>{ return item.genre === 장르 })
+    let copy = [...item]
+    copy = 찾음
+    전체상품변경(copy)
+  }
+
+  function 자동카운트() {
+    function 카운트시작() {
+      autoPlay.current()
+      버튼변경(false)
+    }
+    타이머.current = setInterval(카운트시작, 4000)
+  }
+
+  function 타이머잠깐회수() {
+    clearInterval(타이머.current)
+    타이머.current = setTimeout(자동카운트, 4000)
+  }
+  function 플러스시스템() {
+    if(카운트 < 2) { 카운트변경(카운트 + 1); }
+    else { 카운트변경(0) }
+    버튼변경(false)
+  }
+  function 마이너스시스템() {
+    if(카운트 > 0) { 카운트변경(카운트 - 1) }
+    else { 카운트변경(2) }
+    버튼변경(false)
+  }
   
 
   return(
@@ -75,8 +96,8 @@ function AllGame(props) {
               <SlideContent 슬라이드아이템={슬라이드아이템} 카운트={카운트} 버튼변경={버튼변경} />
           </div>
         </CSSTransition>
-        <button className='prev' onClick={()=>{ 마이너스시스템(); 버튼변경(false) }}>왼쪽!</button>
-        <button className='next' onClick={()=>{ 플러스시스템(); 버튼변경(false) }}>오른쪽!</button>
+        <button className='prev' onClick={()=>{ 마이너스시스템(); 타이머잠깐회수(); }}>왼쪽!</button>
+        <button className='next' onClick={()=>{ 플러스시스템(); 타이머잠깐회수(); }}>오른쪽!</button>
         <div className="slide-dot-box">
           { 슬라이드아이템.map((a, i)=>{
             if(i !== 카운트) {return<span className="slide-dot" 

@@ -28,24 +28,44 @@ function App() {
 
   //슬라이드상품
   let [recommend, setRecommend] = useState([item[7], item[1], item[13], item[8], item[14], item[16]])
-  let [slideState, setSlideState] = useState(0);
+  let [카운트, 카운트변경] = useState(0);
 
   //프로모션 상품
   let [promotionItem, setpromotionItem] = useState(sale30)
   let [promoCount, setPromoCount] = useState(0)
   //Nav토글
-  let [navToggle, setNavToggle] = useState(false)
   let 스위치 = useSelector((state)=> state.스위치)
+  let 타이머 = useRef()
+  let autoPlay = useRef()
+  autoPlay.current = 플러스시스템
 
   const topRef = useRef(null)
   function topScroll() {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   }
   //함수 모음
-  function slideSystem() {
-    if(slideState >= recommend.length) { setSlideState(0) }
-    if(slideState < 0) {setSlideState(recommend.length - 1)}
+  function 자동카운트() {
+    function 카운트시작() {
+      dispatch({ type:'스위치false' })
+      autoPlay.current()
+    }
+    타이머.current = setInterval(카운트시작, 4000)
   }
+  function 타이머잠깐회수() {
+    clearInterval(타이머.current)
+    타이머.current = setTimeout(자동카운트, 4000)
+  }
+  function 플러스시스템() {
+    if(카운트 < recommend.length - 1) { 카운트변경(카운트 + 1) }
+    else { 카운트변경(0) }
+    dispatch({ type:'스위치false' })
+  }
+  function 마이너스시스템() {
+    if(카운트 > 0) { 카운트변경(카운트 - 1) }
+    else { 카운트변경(recommend.length - 1) }
+    dispatch({ type:'스위치false' })
+  }
+  
   //detail.js에서 id값받기
   let [detailNum, setDetailNum] = useState()
   function changDetailNum(a) {
@@ -72,7 +92,11 @@ function App() {
   useEffect(()=>{
     return dispatch({ type: '모달off' });
   },[])
-    
+
+  useEffect(()=>{
+    자동카운트()
+    return ()=> clearInterval(타이머.current) 
+  },[])
 
     
   return (
@@ -139,26 +163,25 @@ function App() {
                 <CSSTransition in={스위치} classNames="wow" timeout={1000}>
                   <ShowSlide 
                     item={item}  
-                    slideState={slideState} 
+                    카운트={카운트} 
                     recommend={recommend} />
                 </CSSTransition>
-                <SlideInfo recommend={recommend} slideState={slideState}/>
+                <SlideInfo recommend={recommend} 카운트={카운트}/>
             </div>
             <div className="slide-dot-box">
               {recommend.map((a, i)=>{
-              if(i !== slideState){ return <span className={"slide-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); setSlideState(i) }}>ㅡ</span>}
-              if(i === slideState){ return <span className={"now-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); setSlideState(i) }}>ㅡ</span>}
+              if(i !== 카운트){ return <span className={"slide-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); 카운트변경(i) }}>ㅡ</span>}
+              if(i === 카운트){ return <span className={"now-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); 카운트변경(i) }}>ㅡ</span>}
               })}
             </div>
             <div className="arrow-left">
-              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); setSlideState(slideState - 1) }}>왼쪽!</button>
+              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); 마이너스시스템(); 타이머잠깐회수() }}>왼쪽!</button>
             </div>
             <div className="arrow-right">
-              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); setSlideState(slideState + 1) }}>오른쪽!</button>
+              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); 플러스시스템(); 타이머잠깐회수() }}>오른쪽!</button>
             </div>
           </div>
 
-          {slideSystem()}
 
         </div>
       </section>
@@ -204,24 +227,24 @@ function ShowSlide(props) {
     dispatch({ type: '스위치true' })
   })
   let slideContent = props.recommend.map((a, i)=>{ return <img src={ a.img }/> })
-  let item = props.recommend[props.slideState]
+  let item = props.recommend[props.카운트]
   return(
     <div className="slide-content" onClick={()=>{
       history.push(`detail/${ item.id }`); dispatch({ type:'스위치false' }) }}>
-      { slideContent[props.slideState] }
+      { slideContent[props.카운트] }
     </div> 
   )
 }
 
 function SlideInfo(props) {
-  if(props.slideState >= 0 && props.slideState < props.recommend.length){
+  if(props.카운트 >= 0 && props.카운트 < props.recommend.length){
   return(
     <div className = "slide-content-info">
-      <p>TITLE : { props.recommend[props.slideState].title }</p>
+      <p>TITLE : { props.recommend[props.카운트].title }</p>
       <p>더이상의 자세한 설명은 생략한다.</p>
-      <p>장르 :  {props.recommend[props.slideState].genre }</p>
+      <p>장르 :  {props.recommend[props.카운트].genre }</p>
       <p>평가 : 그냥 미쳤음 ⭐⭐⭐⭐ </p>
-      <p>가격 : { props.recommend[props.slideState].price } 원</p>
+      <p>가격 : { props.recommend[props.카운트].price } 원</p>
     </div> 
   )}
 }
