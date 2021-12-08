@@ -7,7 +7,11 @@ import YouTube from "react-youtube";
 import axios from "axios";
 
 //데이터 & 파일
-import './detail.scss'
+import '../css/detail.scss'
+
+//Material UI Commponents
+import { Typography } from "@material-ui/core";
+import { Button } from '@material-ui/core'
 
 
 function Detail(props) {
@@ -51,7 +55,7 @@ function Detail(props) {
       
       <section className="item">
         <div className="inner">
-          <p className="title">{ items.title }</p>
+          <Typography className="title" variant="h3" align='center'>{ items.title }</Typography>
           <div className="item-box">
             <div className="item-content">
               <img src={ items.img }/>
@@ -59,18 +63,17 @@ function Detail(props) {
             <ItemInfo items={items}/>
           </div>
           <div className="item-buy">
-            <button>구매하기</button>
-            <button onClick={()=>{ 
-              dispatch({ type: '모달on'});   
-              dispatch({ type: 'cartin' });
-              detailNumSubmit()
-            }}>장바구니</button>
-
-            { 
-              items.sale
-              ?  <span className="price"> { items.price } 원 아니고!  { items.price - (items.price * (items.sale / 100)) } 원</span>
-              :  <span className="price"> { items.price } 원</span>
-            }
+            <Button variant="contained" color="primary" size="large">구매하기</Button>
+            <Button variant="contained" color="primary" size="large"
+              onClick={()=>{
+                dispatch({ type: '모달on'});   
+                dispatch({ type: 'cartin' });
+                detailNumSubmit() }}>장바구니 담기</Button>
+              { 
+                items.sale
+                ?  <span className="price"> { items.price } 원 아니고!  { items.price - (items.price * (items.sale / 100)) } 원</span>
+                :  <span className="price"> { items.price } 원</span>
+              }
           </div>
         </div>
       </section>
@@ -83,7 +86,7 @@ function Detail(props) {
           </div>
           <div className="info-explain">
             <div className="explain-game">
-              <p>게임에 대해</p>
+              <Typography className="title" variant="h4" align='left'>게임에 대해</Typography>
               <div>{items.explain}</div>
             </div>
           </div>

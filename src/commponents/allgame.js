@@ -1,11 +1,15 @@
 import React, { useEffect, useImperativeHandle, useRef, useState} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { Nav, Card, Button, Carousel } from 'react-bootstrap'
+import { Nav, Card, Carousel } from 'react-bootstrap'
 import { CSSTransition } from "react-transition-group";
+import '../css/allgame.scss'
 
-import './allgame.scss'
-import Modal from './modal'
+//Material UI Commponents
+import { Typography } from "@material-ui/core";
+import { Button } from '@material-ui/core'
+
+
 
 
 function AllGame(props) {
@@ -80,17 +84,15 @@ function AllGame(props) {
       <div className="inner">
         <div className="main">
           <img src={ mainImg }/>
-          <div className="main-text">
-            <p>마음의 준비? 그런건 필요없습니다</p>
-            <p>지금 당장 모든게임을 만나보세요</p>
-          </div>
+            <Typography variant="h4" align='center'>마음의 준비? 그런건 필요없습니다</Typography>
+            <Typography className="title" variant="h4" align='center'>지금 당장 모든게임을 만나보세요</Typography>
         </div>
       </div>
     </section>
     
     <section className="slide">
       <div className="inner">
-        <p className="title">지금 할인중인 상품!</p>
+      <Typography className="title" variant="h3" align='left'>지금 할인중인 상품!</Typography>
         <CSSTransition in={버튼} classNames='wow' timeout={1000}>
           <div className="slide-box">
               <SlideContent 슬라이드아이템={슬라이드아이템} 카운트={카운트} 버튼변경={버튼변경} />
@@ -186,9 +188,13 @@ function SlideContent(props) {
         <Card style={{ width: '18rem' }}>
           <Card.Img variant="top" src={a.img} />
           <Card.Body>
-            <Card.Title>{a.title}</Card.Title>
+            <Card.Title>
+            <Typography variant="h5" align='center'>{a.title}</Typography>
+            </Card.Title>
             <Card.Text>
-              주말특가! {a.title} 을 할인된 가격에 만나보세요!
+              <Typography variant="p" align='center'>
+                주말특가! {a.title} 을 할인된 가격에 만나보세요!
+              </Typography>
             </Card.Text>
             <div className="info">
               <div className="sale"> -{a.sale} %</div>
@@ -197,10 +203,10 @@ function SlideContent(props) {
                 <div className="final">{salePrice} 원</div>
               </div>
             </div>
-            <Button variant="primary" onClick={()=>{
+            <Button variant="contained" color="primary" size="small" 
+              onClick={()=>{
               history.push(`/detail/${a.id}`);
-              dispatch({ type:'스위치false' })
-           }}>지금 구매하기</Button>
+              dispatch({ type:'스위치false' }) }}>지금 구매하기</Button>
           </Card.Body>
         </Card>
       )

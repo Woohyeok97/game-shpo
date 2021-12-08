@@ -4,15 +4,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Route, Link, Switch, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition } from 'react-transition-group';
-import styled from 'styled-components';
 
 //데이터 & 파일
-import './App.scss';
-import items from './game-data.js'
+import '../css/App.scss';
+import items from '../game-data.js'
 import Detail from './detail'
 import AllGame from './allgame'
 import Cart from './cart'
 import Modal from './modal'
+
+//Material UI Commponents
+import { Typography } from "@material-ui/core";
+import { Button } from '@material-ui/core'
+import { Container, Box } from '@material-ui/core';
 
 
 function App() {
@@ -74,7 +78,7 @@ function App() {
 
   //useEffect사용 
   useEffect(()=>{
-    topScroll();
+    // topScroll();//잠깐만끌게잉
     setPromoCount(0);
   },[])
 
@@ -155,9 +159,7 @@ function App() {
       {/* {비쥬얼섹션} */}
       <section className="visual">
         <div className="inner">
-          <h2 className="title">
-            <span>RECOMMEND</span>
-          </h2>
+          <Typography className="title" variant="h3" align='center'>ROCOMMEND</Typography>
           <div className="slide-container">
             <div className="slide-content-box">             
                 <CSSTransition in={스위치} classNames="wow" timeout={1000}>
@@ -190,7 +192,7 @@ function App() {
       {/* 프로모션섹션 */}
       <section className="promotion">
         <div className="inner">
-          <p className="promotion-title">SPECIAL OFFERS 근데 아직 할인은 꿈도 꾸지마쇼!</p>
+          <Typography className="title" variant="h4" align='center'>SPECIAL OFFERS 근데 아직 할인은 꿈도 꾸지마쇼!</Typography>
           
       
           <div className="promotion-box">     
@@ -198,12 +200,8 @@ function App() {
               return <ShowPromotion  promotionItem={ a } />
             })}
           </div>
-          <div className="promotion-btn">
-            { true === promoCount < 2 &&
-            <button onClick={()=>{   
-            setPromoCount(promoCount + 1);
-            }}>더보기</button> }
-          </div>
+          <Button variant="contained" color="primary" size="large" align="center"
+          onClick={()=>{ setPromoCount(promoCount + 1) }}>더보여줘!</Button>
         </div>
       </section>    
       </Route>
