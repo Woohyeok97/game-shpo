@@ -4,38 +4,40 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import YouTube from "react-youtube";
-import axios from "axios";
 
 //데이터 & 파일
 import '../css/detail.scss'
-
+import { makeSalePrice } from "./App";
 //Material UI Commponents
+import { commonMaterial } from './commom-material';
 import { Typography } from "@material-ui/core";
 import { Button } from '@material-ui/core'
+import { Container, Grid, Box } from '@material-ui/core'
 
 
 function Detail(props) {
   //변수 & State 모음
   let dispatch = useDispatch()
+  let classes = commonMaterial()
 
   let item = useSelector((state)=> state.reducer )
-  let modal = useSelector((state)=> state.modal )
-  let 모달종류 = useSelector((state)=> state.모달종류)
-  let cart = useSelector((state) => state.cart)
   let { id } = useParams();
   let items = item.find((a)=>{ return a.id == id })
 
+  //YOUTUBE API
   let opts = {
+    height: '100%',
+    width: '100%',
     playerVars: {
       autoplay: 1,
       rel: 0,
       modestbranding : 1
     },
   };
-  let 스위치 = useSelector((state)=> state.스위치)
   
-  function detailNumSubmit() {
-    props.changDetailNum(id)
+  //App.js에 itemNum보내기
+  function transmitItemNum() {
+    props.changeItemNum(id)
   }
   //useEffect 사용
   
@@ -52,45 +54,51 @@ function Detail(props) {
 
   return(
     <div className="Root">
-      
       <section className="item">
-        <div className="inner">
-          <Typography className="title" variant="h3" align='center'>{ items.title }</Typography>
-          <div className="item-box">
-            <div className="item-content">
-              <img src={ items.img }/>
-            </div>
-            <ItemInfo items={items}/>
-          </div>
-          <div className="item-buy">
-            <Button variant="contained" color="primary" size="large">구매하기</Button>
-            <Button variant="contained" color="primary" size="large"
-              onClick={()=>{
-                dispatch({ type: '모달on'});   
-                dispatch({ type: 'cartin' });
-                detailNumSubmit() }}>장바구니 담기</Button>
-              { 
-                items.sale
-                ?  <span className="price"> { items.price } 원 아니고!  { items.price - (items.price * (items.sale / 100)) } 원</span>
-                :  <span className="price"> { items.price } 원</span>
-              }
-          </div>
-        </div>
+        <Container maxWidth="md">
+        <Box sx={{ marginBottom:'50px'}}>
+        <Typography className={classes.title} variant="h3" align='center'>{ items.title }</Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Box sx={{ width:'100%', height: '100%'}} className='youtube-box'> 
+                <YouTube videoId={items.youtube} opts={opts} height={'100%'}/>
+              </Box>
+            </Grid>
+            <Grid item container xs={4} direction="column" justifyContent="space-between" spacing={2}>
+              <Grid item>
+                <Box>
+                  <img className={classes.img} src={ items.img }/>
+                </Box>
+              </Grid>
+              <Grid item>
+                <ItemInfo items={items}/>
+              </Grid>
+              <Grid item container justifyContent="flex-start" spacing={2} >
+                <Grid item>
+                  <Button variant="contained" color="primary" size="large">구매하기</Button>
+                </Grid>
+                <Grid item>
+                  <Button variant="contained" color="primary" size="large"
+                    onClick={()=>{
+                    dispatch({ type: '모달on'});   
+                    dispatch({ type: 'cartin' });
+                    transmitItemNum() }}>장바구니 담기</Button>
+                </Grid>
+              </Grid>           
+            </Grid>
+          </Grid>
+        </Box>  
+        </Container>∫
       </section>
 
 
       <section className="info">
-        <div className="inner">
-          <div className="info-youtube">
-            <YouTube videoId={items.youtube} opts={opts}></YouTube>
-          </div>
-          <div className="info-explain">
-            <div className="explain-game">
-              <Typography className="title" variant="h4" align='left'>게임에 대해</Typography>
-              <div>{items.explain}</div>
-            </div>
-          </div>
-        </div>
+        <Container maxWidth="md">
+          <Typography className={classes.title} variant="h3" align='center'>게임에 대해</Typography>
+          <Box sx={{ marginBottom:'50px'}}>
+            <Typography variant="body2">{items.explain}</Typography>
+          </Box>
+        </Container>
       </section>
 
 
@@ -99,17 +107,21 @@ function Detail(props) {
 }
 
 function ItemInfo(props) {
+  const items = props.items
   return(
-    <div className="item-info">
-      <div className="text">
-        <div className="subtitle">평가 :</div>
-        <div className="result"> 미친게임 ⭐⭐⭐⭐</div>
-      </div>
-      <div className="text">
-        <div className="subtitle">장르 :</div>
-        <div className="result">{ props.items.genre }</div>
-      </div>
-    </div>
+    <>
+      <Box>
+        <Typography variant="body1">평가 : 미친게임 ⭐⭐⭐⭐</Typography>
+        <Typography variant="body1">장르 : { items.genre }</Typography>
+        <Typography variant="body1">가격 : 
+          { 
+            items.sale
+            ?  <span className="price"> { items.price.toLocaleString() } 원 아니고! { makeSalePrice(items).toLocaleString() } 원</span>
+            :  <span className="price"> { items.price.toLocaleString() } 원</span>
+          }
+        </Typography>
+      </Box>
+    </>
   )
 }
 

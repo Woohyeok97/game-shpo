@@ -1,22 +1,24 @@
 
 //라이브러리 & API
 import React, { useState, useEffect, useRef } from 'react';
-import { Route, Link, Switch, useHistory } from 'react-router-dom'
+import { Route, Switch, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition } from 'react-transition-group';
 
 //데이터 & 파일
 import '../css/App.scss';
-import items from '../game-data.js'
 import Detail from './detail'
 import AllGame from './allgame'
 import Cart from './cart'
 import Modal from './modal'
 
 //Material UI Commponents
-import { Typography } from "@material-ui/core";
+import { commonMaterial } from './commom-material';
+import { Card, CardContent, CardHeader, CardMedia, Typography,} from "@material-ui/core";
 import { Button } from '@material-ui/core'
-import { Container, Box } from '@material-ui/core';
+import { Grid, Box, Container } from '@material-ui/core';
+import LensIcon from '@material-ui/icons/Lens';
+
 
 
 function App() {
@@ -29,56 +31,63 @@ function App() {
   
   let history = useHistory();
   let dispatch = useDispatch()
+  const classes = commonMaterial()
 
   //슬라이드상품
-  let [recommend, setRecommend] = useState([item[7], item[1], item[13], item[8], item[14], item[16]])
-  let [카운트, 카운트변경] = useState(0);
+  let recommend = [item[7], item[1], item[13], item[8], item[14], item[16]]
+  let [count, setCount] = useState(0)
 
   //프로모션 상품
   let [promotionItem, setpromotionItem] = useState(sale30)
   let [promoCount, setPromoCount] = useState(0)
   //Nav토글
   let 스위치 = useSelector((state)=> state.스위치)
-  let 타이머 = useRef()
+  let timer = useRef()
   let autoPlay = useRef()
-  autoPlay.current = 플러스시스템
-
+  autoPlay.current = plusCount
+  //자동화면 올리기
   const topRef = useRef(null)
   function topScroll() {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   }
+
   //함수 모음
   function 자동카운트() {
-    function 카운트시작() {
+    function startCount() {
       dispatch({ type:'스위치false' })
       autoPlay.current()
     }
-    타이머.current = setInterval(카운트시작, 4000)
+    timer.current = setInterval(startCount, 4000)
   }
   function 타이머잠깐회수() {
-    clearInterval(타이머.current)
-    타이머.current = setTimeout(자동카운트, 4000)
+    clearInterval(timer.current)
+    timer.current = setTimeout(자동카운트, 4000)
   }
-  function 플러스시스템() {
-    if(카운트 < recommend.length - 1) { 카운트변경(카운트 + 1) }
-    else { 카운트변경(0) }
+  function plusCount() {
+    if(count < recommend.length - 1) { setCount(count + 1) }
+    else { setCount(0) }
     dispatch({ type:'스위치false' })
   }
-  function 마이너스시스템() {
-    if(카운트 > 0) { 카운트변경(카운트 - 1) }
-    else { 카운트변경(recommend.length - 1) }
+  function minusCount() {
+    if(count > 0) { setCount(count - 1) }
+    else { setCount(recommend.length - 1) }
     dispatch({ type:'스위치false' })
   }
   
   //detail.js에서 id값받기
-  let [detailNum, setDetailNum] = useState()
-  function changDetailNum(a) {
-    setDetailNum(a)
+  let [itemNum, setItemNum] = useState()
+  function changeItemlNum(a) {
+    setItemNum(a)
+  }
+  //cart.js에서 cartnumber받기
+  let [cartNum, setCartNum] = useState()
+  function changeCartNum(a) {
+    setCartNum(a)
   }
 
   //useEffect사용 
   useEffect(()=>{
-    // topScroll();//잠깐만끌게잉
+    topScroll();
     setPromoCount(0);
   },[])
 
@@ -96,20 +105,20 @@ function App() {
   useEffect(()=>{
     return dispatch({ type: '모달off' });
   },[])
-
+  
   useEffect(()=>{
-    자동카운트()
-    return ()=> clearInterval(타이머.current) 
+    자동카운트();
+    return ()=> { clearInterval(timer.current); clearTimeout(timer.current) }
   },[])
 
     
   return (
     <div className="Root">
 
-      { true === modal && <Modal detailNum={detailNum}/> }
+      { true === modal && <Modal itemNum={itemNum} cartNum={cartNum} /> }
       {/* 상단메뉴 */}
       <header ref={topRef} className="nav">
-        <div className="inner">
+        <Container maxWidth="md">
           <div className='navbar'>
             <div className="logo">   
                 <img onClick={()=>{ history.push('/');
@@ -126,7 +135,7 @@ function App() {
                   }}>로그인</li>
               </ul>           
           </div>
-        </div>
+        </Container>
       </header>
       
       
@@ -143,14 +152,14 @@ function App() {
 
       <Route path="/detail/:id">
         <CSSTransition in={스위치} classNames="wow" timeout={1000}>
-          <Detail topScroll={topScroll} changDetailNum={changDetailNum}/>
+          <Detail topScroll={topScroll} changeItemNum={changeItemlNum}/>
         </CSSTransition>
       </Route>
 
       
       <Route path="/cart">
         <CSSTransition in={스위치} classNames="wow" timeout={1000}>
-         <Cart topScroll={topScroll}/>
+         <Cart topScroll={topScroll} changeCartNum={changeCartNum}/>
         </CSSTransition>
       </Route>
       
@@ -158,51 +167,43 @@ function App() {
       <Route path="/">
       {/* {비쥬얼섹션} */}
       <section className="visual">
-        <div className="inner">
-          <Typography className="title" variant="h3" align='center'>ROCOMMEND</Typography>
-          <div className="slide-container">
-            <div className="slide-content-box">             
-                <CSSTransition in={스위치} classNames="wow" timeout={1000}>
-                  <ShowSlide 
-                    item={item}  
-                    카운트={카운트} 
-                    recommend={recommend} />
-                </CSSTransition>
-                <SlideInfo recommend={recommend} 카운트={카운트}/>
-            </div>
-            <div className="slide-dot-box">
-              {recommend.map((a, i)=>{
-              if(i !== 카운트){ return <span className={"slide-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); 카운트변경(i) }}>ㅡ</span>}
-              if(i === 카운트){ return <span className={"now-dot"} onClick={()=>{ dispatch({ type:'스위치false' }); 카운트변경(i) }}>ㅡ</span>}
-              })}
-            </div>
-            <div className="arrow-left">
-              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); 마이너스시스템(); 타이머잠깐회수() }}>왼쪽!</button>
-            </div>
-            <div className="arrow-right">
-              <button className="slide-btn" onClick={()=>{ dispatch({ type:'스위치false' }); 플러스시스템(); 타이머잠깐회수() }}>오른쪽!</button>
-            </div>
-          </div>
-
-
-        </div>
+        <Container maxWidth="md">
+          <Typography className={classes.title} variant="h3" align='center'>ROCOMMEND</Typography>
+          <Grid container alignItems='center'>
+            <Grid item xs={12}>
+              <CSSTransition in={스위치} classNames="wow" timeout={1000}>
+                <CarouselImage item={item} 카운트={count} recommend={recommend} classes={classes} />
+              </CSSTransition>
+            </Grid>
+            <Grid item xs={7}>
+              <CarouselInfo recommend={recommend} count={count} />
+            </Grid>
+            <Grid item xs={5}>
+              <CarouselMovement recommend={recommend} count={count} 
+                minusCount={minusCount} plusCount={plusCount} 타이머잠깐회수={타이머잠깐회수} setCount={setCount}/>
+            </Grid>
+          </Grid>
+              
+        </Container>
       </section>
 
 
       {/* 프로모션섹션 */}
       <section className="promotion">
-        <div className="inner">
-          <Typography className="title" variant="h4" align='center'>SPECIAL OFFERS 근데 아직 할인은 꿈도 꾸지마쇼!</Typography>
-          
-      
-          <div className="promotion-box">     
-            {promotionItem.map((a, i)=>{
-              return <ShowPromotion  promotionItem={ a } />
-            })}
-          </div>
-          <Button variant="contained" color="primary" size="large" align="center"
-          onClick={()=>{ setPromoCount(promoCount + 1) }}>더보여줘!</Button>
-        </div>
+        <Container maxWidth="md">
+          <Typography className={classes.title} variant="h3" align='center'>
+            SPECIAL OFFERS
+          </Typography>
+          <Grid container justifyContent="center" spacing={4} >     
+            { promotionItem.map((a, i)=>{
+                return <ShowPromotion  promotionItem={ a } classes={classes}/> })}
+            <Grid item>
+              { true === promoCount < 2 &&
+                <Button variant="contained" color="primary" size="large" align="center" style={{ margin:'50px' }}
+                onClick={()=>{ setPromoCount(promoCount + 1) }}>더보여줘!</Button> }
+            </Grid>
+          </Grid>
+        </Container>
       </section>    
       </Route>
       
@@ -217,64 +218,166 @@ function App() {
   );
 }
 
-function ShowSlide(props) {
-  let history = useHistory()
-  let dispatch = useDispatch()
-
+function CarouselImage(props) {
   useEffect(() => {
     dispatch({ type: '스위치true' })
   })
+
+  let history = useHistory()
+  let dispatch = useDispatch()
   let slideContent = props.recommend.map((a, i)=>{ return <img src={ a.img }/> })
   let item = props.recommend[props.카운트]
+
   return(
-    <div className="slide-content" onClick={()=>{
+    <div className="carousel-img" onClick={()=>{
       history.push(`detail/${ item.id }`); dispatch({ type:'스위치false' }) }}>
       { slideContent[props.카운트] }
     </div> 
   )
 }
-
-function SlideInfo(props) {
-  if(props.카운트 >= 0 && props.카운트 < props.recommend.length){
+function CarouselInfo(props) {
+  if(props.count >= 0 && props.count < props.recommend.length){
   return(
-    <div className = "slide-content-info">
-      <p>TITLE : { props.recommend[props.카운트].title }</p>
-      <p>더이상의 자세한 설명은 생략한다.</p>
-      <p>장르 :  {props.recommend[props.카운트].genre }</p>
-      <p>평가 : 그냥 미쳤음 ⭐⭐⭐⭐ </p>
-      <p>가격 : { props.recommend[props.카운트].price } 원</p>
-    </div> 
+    <Box sx={{ margin:"10px 0" }}>
+      <Box sx={{ paddingBottom: '10px' }}>
+        <Typography component="h2" variant="h4" color='initial'>
+          { props.recommend[props.count].title }
+        </Typography>
+      </Box>
+      <Box>
+        { props.recommend[props.count].sale
+        ? <SalePriceBox item={props.recommend[props.count]} />
+        : <PriceBox item={props.recommend[props.count]}  /> }
+      </Box>
+    </Box>
   )}
+}
+function CarouselMovement(props) {
+  const dispatch = useDispatch()
+  return (
+    <Box>
+      <Grid container  justifyContent="space-between" alignItems="center">
+        <Grid item>
+          <Button color="primary" size="large" align="center" variant="contained"
+            onClick={()=>{ dispatch({ type:'스위치false' }); props.minusCount(); props.타이머잠깐회수() }}>
+          ◀︎</Button>
+        </Grid>
+        <Grid item>
+        <CarouselDot a={props.recommend} count={props.count} setCount={props.setCount} 타이머잠깐회수={props.타이머잠깐회수}/>
+        </Grid>
+        <Grid item>
+          <Button color="primary" size="large" align="center" variant="contained"
+            onClick={()=>{ dispatch({ type:'스위치false' }); props.plusCount(); props.타이머잠깐회수() }}>
+          ►</Button>
+        </Grid>
+      </Grid>
+    </Box>
+  )
+}
+export function CarouselDot(props) {
+  const dispatch = useDispatch()
+  const classes = commonMaterial()
+  return(
+    props.a.map((a, i)=>{
+      if(i !== props.count){ 
+        return <LensIcon className={classes.carouselDot} fontSize="medium"
+        onClick={()=>{ dispatch({ type:'스위치false' }); props.setCount(i); props.타이머잠깐회수() }} /> 
+      }
+      if(i === props.count){ 
+        return <LensIcon className={classes.NowCarouselDot} fontSize="medium"
+        onClick={()=>{ dispatch({ type:'스위치false' }); props.setCount(i); props.타이머잠깐회수() }} /> 
+      }
+  }))
 }
 
 function ShowPromotion(props) {
   let history = useHistory()
   let dispatch = useDispatch()
+  let classes = props.classes
   return (
-    <div className="promotion-content" onClick={()=>{ history.push(`detail/${props.promotionItem.id}`)}}>
-      <img src={ props.promotionItem.img } onClick={()=>{ dispatch({ type:'스위치false' })}}/>
-      <div className="promotion-info">
-        <p>{ props.promotionItem.title }</p>
-        <p>주말특가!</p>
-        <p>{ props.promotionItem.price }원이 아닌, 무려... 
-        { props.promotionItem.price - (props.promotionItem.price * (props.promotionItem.sale / 100)) } 원! 😎</p>
-      </div>
-    </div>
+<>
+  <Grid item container xs={4} className="promotion-content" >
+    <Card elevation={5}>
+      <CardMedia component="img" src={ props.promotionItem.img } />
+      <CardContent>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item className={classes.gridItems} >
+            <Typography variant="h5" align="center">{ props.promotionItem.title }</Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body1" mt='2'>
+              주말특가! 
+            </Typography>
+          </Grid>
+          <Grid item>
+            <SalePriceBox item={props.promotionItem}/>
+          </Grid>
+          <Grid item container justifyContent="center">
+            <Box sx={{ paddingTop:'10px' }}>
+              <Button size="large" color="primary" variant="contained" onClick={()=>{
+              history.push(`detail/${ props.promotionItem.id }`); dispatch({ type:'스위치false' }) }}>구매하러가기</Button>
+            </Box>
+          </Grid>    
+        </Grid>
+      </CardContent>
+    </Card>
+  </Grid>
+</>    
+  )
+}
+
+function Footer() {
+  let classes = commonMaterial()
+  return(
+    <Box className={classes.footer}>
+      <Container maxWidth="md">
+        <Box sx={{ height:'15vw'}}>
+          안녕하세요 하단입니다~
+        </Box>
+      </Container>
+    </Box>
   )
 }
 
 
 
-function Footer() {
-  return(
-    <footer className="footer">
-      <div className="inner">
-        <div className="footer-box">
-          안녕하세요 하단입니다.
-        </div>
-      </div>
-    </footer>
+export function PriceBox(props) {
+  let classes = commonMaterial()
+  return (
+    <Box className={classes.priceBox}>
+      <Box className={classes.salePriceBox}>
+        <Typography className={classes.salePrice}>
+          ₩ { props.item.price.toLocaleString() }
+        </Typography>
+      </Box>
+    </Box>
   )
+}
+
+export function SalePriceBox(props) {
+  let classes = commonMaterial()
+  return(
+    <Box className={classes.priceBox}>
+      <Typography className={classes.saleBox}>
+        { props.item.sale }%
+      </Typography>
+      <Box className={classes.salePriceBox}>
+        <Typography className={classes.originPrice}>
+          ₩ { props.item.price.toLocaleString() }
+        </Typography>
+        <Typography className={classes.salePrice}>
+          ₩ { makeSalePrice(props.item).toLocaleString() }
+        </Typography>
+      </Box>
+    </Box>
+  )
+}
+
+
+//세일가격생성기
+export function makeSalePrice(item) {
+  let price = item.price - (item.price * (item.sale/100))
+  return price
 }
 
 export default App;

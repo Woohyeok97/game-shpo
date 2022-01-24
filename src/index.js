@@ -72,8 +72,8 @@ function 스위치(state = switchs, action) {
   }
 }
 
-let modalBoolean = false
-function modal(state = modalBoolean, action) {
+let modalCheck = false
+function modal(state = modalCheck, action) {
   switch (action.type) {
     case '모달on' :
       state = true
@@ -90,7 +90,7 @@ function modal(state = modalBoolean, action) {
 }
 
 let modalState = null
-function 모달종류(state = modalState, action) {
+function modalType(state = modalState, action) {
   switch (action.type) {
     case 'cartin':
       state = 'cartin'
@@ -129,7 +129,7 @@ function 모달종류(state = modalState, action) {
 
 let store = createStore(combineReducers({ 
   reducer, sale30, sale40, sale50,
-  스위치, cart , modal, 모달종류
+  스위치, cart , modal, modalType
 }))
 
 ReactDOM.render(
